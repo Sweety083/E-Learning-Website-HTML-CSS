@@ -1,37 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-green
-  labels:
-    app: web
-    version: green
+  name: elearning-green
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: web
+      app: elearning
       version: green
   template:
     metadata:
       labels:
-        app: web
+        app: elearning
         version: green
     spec:
       containers:
-      - name: nginx
-        image: REPLACE_IMAGE
+      - name: elearning
+        image: sweetyraj22/elearning-site:latest
         ports:
         - containerPort: 80
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 2
-          periodSeconds: 5
-          failureThreshold: 3
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
+
