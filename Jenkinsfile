@@ -8,10 +8,10 @@ pipeline {
 
   stages {
     stage('Clone Repo') {
-      steps {
-        git 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS.git'
-      }
-    }
+  steps {
+    git branch: 'main', url: 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS.git'
+  }
+}
 
     stage('Build Docker Image') {
       steps {
