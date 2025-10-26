@@ -10,7 +10,8 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS'
+                git branch: 'main', url: 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS'
+
             }
         }
 
