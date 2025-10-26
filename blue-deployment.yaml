@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: elearning-blue
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: elearning
@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
       - name: elearning
-        image: sweetyraj22/elearning-site:latest
+        image: sweetyraj22/elearning-website:v1
         ports:
         - containerPort: 80
+
