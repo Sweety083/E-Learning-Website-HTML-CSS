@@ -1,49 +1,45 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKER_IMAGE = "sweetyraj22/elearning-site:latest"
-    KUBE_CONTEXT = "docker-desktop" // or minikube if you're using that
-  }
-
-  stages {
-    stage('Clone Repo') {
-  steps {
-    git branch: 'main', url: 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS.git'
-  }
-}
-
-    stage('Build Docker Image') {
-      steps {
-        sh "docker build -t $DOCKER_IMAGE ."
-      }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Add in Jenkins
+        IMAGE_NAME = "elearning-website"
+        DOCKERHUB_USER = "sweetyraj22"
     }
 
-    stage('Push to Docker Hub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-          sh "docker push $DOCKER_IMAGE"
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS'
+            }
         }
-      }
-    }
 
-    stage('Deploy Green to Kubernetes') {
-      steps {
-        sh "kubectl apply -f green-deployment.yaml --context=$KUBE_CONTEXT"
-      }
-    }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKERHUB_USER/$IMAGE_NAME:v1 .'
+                }
+            }
+        }
 
-    stage('Switch Traffic to Green') {
-      steps {
-        sh "kubectl patch service elearning-service -p '{\"spec\":{\"selector\":{\"app\":\"elearning\",\"version\":\"green\"}}}' --context=$KUBE_CONTEXT"
-      }
-    }
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh 'docker push $DOCKERHUB_USER/$IMAGE_NAME:v1'
+                }
+            }
+        }
 
-    stage('Delete Blue Deployment') {
-      steps {
-        sh "kubectl delete deployment elearning-blue --context=$KUBE_CONTEXT"
-      }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh '''
+                    kubectl apply -f k8s-deployment.yaml
+                    kubectl apply -f k8s-service.yaml
+                    '''
+                }
+            }
+        }
     }
-  }
 }
