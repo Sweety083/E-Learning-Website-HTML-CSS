@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elearning-green
+  labels:
+    app: elearning
+    version: green
 spec:
   replicas: 2
   selector:
@@ -15,8 +18,9 @@ spec:
         version: green
     spec:
       containers:
-      - name: elearning
-        image: sweetyraj22/elearning-website:v2
-        ports:
-        - containerPort: 80
+        - name: elearning-container
+          image: elearning-website:v1
+          ports:
+            - containerPort: 80
+
 
