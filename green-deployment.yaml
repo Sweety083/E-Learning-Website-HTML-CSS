@@ -19,7 +19,8 @@ spec:
     spec:
       containers:
         - name: elearning-container
-          image: elearning-website:v1
+          image: elearning-website:v2
           ports:
             - containerPort: 80
+
 
