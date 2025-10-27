@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/Sweety083/E-Learning-Website-HTML-CSS'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh '''
+                        eval $(minikube docker-env)
+                        docker build -t elearning-website:v1 .
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy Blue-Green') {
+            steps {
+                script {
+                    sh '''
+                        kubectl apply -f k8s/blue-deployment.yaml
+                        kubectl apply -f k8s/green-deployment.yaml
+                        kubectl apply -f k8s/service2.yaml
+                    '''
+                }
+            }
+        }
+    }
+}
